@@ -79,27 +79,35 @@ def read_cliques(clique_file='shs_pruned.txt'):
         """Extract uri from line of db text."""
         first_col = uri_line.split('<SEP>')[0]
         return first_col.strip(' \n')
-    
-    uris, ids = read_uris()
 
+    # initialize output dictionary
     clique_dict = {}
 
+    # initialize output array
+    uris, ids = read_uris()
     cliques = np.empty(len(uris), dtype='S140')
     cliques[:] = ''
     
+    # initialize loop vars
     clique_name = None
     clique_uris = []
+
+    # read clique file
     with open(clique_path) as f:
 
         for line in f.readlines():
 
+            # read clique name lines
             if line.startswith('%'):
+
+                # write to dictionary
                 if not clique_name is None:
                     clique_dict[clique_name] = clique_uris
 
                 clique_name = __strip_clique_name__(line)
                 clique_uris = []
 
+            # read clique URI lines
             elif not line.startswith('#'):
                 uri = __strip_uri__(line)
                 clique_uris.append(uri)
@@ -110,6 +118,7 @@ def read_cliques(clique_file='shs_pruned.txt'):
                     # no id for uri 
                     pass
 
+        # write to dictionary
         clique_dict[clique_name] = clique_uris
     
     return clique_dict, cliques
@@ -130,7 +139,7 @@ def split_train_test_validation(clique_dict, ratio=(50,20,30),
         tuple: len-3 tuple containing the list of ids relating to
             train, test and validation datasets
     """
-    # ensure ratio sums to 1
+    # scale ratios to sum to 1
     ratio = ratio / np.sum(ratio)
     
     clique_names = clique_dict.keys()
