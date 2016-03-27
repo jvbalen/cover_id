@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 
-"""Evaluate cover id experiment."""
+"""I/O for the SHS dataset."""
+
+from __future__ import division, print_function
 
 import numpy as np
 import os
 from pandas import read_csv
+from sklearn.cross_validation import train_test_split
+
 
 # global vars
 data_dir = '/Users/Jan/Documents/Work/Data/SHS_julien/'
@@ -76,29 +80,75 @@ def read_cliques(clique_file='shs_pruned.txt'):
         first_col = uri_line.split('<SEP>')[0]
         return first_col.strip(' \n')
     
-    clique_dict = {}
-    
     uris, ids = read_uris()
+
+    clique_dict = {}
+
     cliques = np.empty(len(uris), dtype='S140')
     cliques[:] = ''
     
     clique_name = None
     clique_uris = []
     with open(clique_path) as f:
+
         for line in f.readlines():
+
             if line.startswith('%'):
                 if not clique_name is None:
                     clique_dict[clique_name] = clique_uris
+
                 clique_name = __strip_clique_name__(line)
                 clique_uris = []
+
             elif not line.startswith('#'):
                 uri = __strip_uri__(line)
                 clique_uris.append(uri)
+
                 try:
                     cliques[ids[uri]] = clique_name
                 except KeyError:
                     # no id for uri 
                     pass
+
         clique_dict[clique_name] = clique_uris
     
     return clique_dict, cliques
+
+
+def split_train_test_validation(clique_dict, ratio=(50,20,30),
+                               random_state=1988):
+    """Split cliques into train, test and validation dataset.
+    
+    Args:
+        clique_dict: dictionary with clique names as keys and lists of
+            song URI's as values.
+        ratio (tuple): length-3 tuple speficying the ratio of train,
+            test and validation set size.
+    Returns:
+        tuple: len-3 tuple containing the train, test, and validation
+            partioning of the clique dictionary
+        tuple: len-3 tuple containing the list of ids relating to
+            train, test and validation datasets
+    """
+    # ensure ratio sums to 1
+    ratio = ratio / np.sum(ratio)
+    
+    clique_names = clique_dict.keys()
+    
+    # make validation set
+    train_test, val = train_test_split(clique_names,
+                                       test_size=ratio[-1],
+                                       random_state=random_state)
+    val_cliques = {clique_name: clique_dict[clique_name] for
+                   clique_name in val}
+    
+    # make train & test set
+    train, test =  train_test_split(train_test,
+                                    test_size=ratio[1],
+                                    random_state=random_state)
+    train_cliques = {clique_name: clique_dict[clique_name] for
+                     clique_name in train}
+    test_cliques = {clique_name: clique_dict[clique_name] for
+                     clique_name in test}
+    
+    return train_cliques, test_cliques, val_cliques
