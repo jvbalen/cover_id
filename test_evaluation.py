@@ -22,11 +22,12 @@ class Test_evaluate_query(unittest.TestCase):
 		retrieved = ['TR4', 'TR5', 'TR6', 'TR7']
 		res = evaluation.evaluate_query(self.query, retrieved, self.correct)
 		self.assertEqual(res['ap'], 0)
-		self.assertEqual(res['ap'], 0)
-		self.assertEqual(res['ap'], 0)
+		self.assertEqual(res['p1'], 0)
+		self.assertEqual(res['r5'], 0)
 
 	def test_one(self):
 		"""Do perfect results return ap = 1"""
+		# retrieved = ['TR2', 'TR3', 'TR4', 'TR5']
 		retrieved = ['TR2', 'TR3', 'TR4', 'TR5']
 		res = evaluation.evaluate_query(self.query, retrieved, self.correct)
 		self.assertEqual(res['ap'], 1)
