@@ -46,7 +46,8 @@ class Test_evaluate_query(unittest.TestCase):
 		query = 'TRKVQBG128F427E511'
 		retrieved = ['TRQFPOO128F92E27A4', 'TRTTHWG128F92F6F57',  # these two are incorrect
 					 'TRQUXMZ128F92D16D2', 'TRQJONS128F428D06E']  # these two are correct
-		res = evaluation.evaluate_query(query, retrieved)
+		correct = ['TRQUXMZ128F92D16D2', 'TRQJONS128F428D06E']
+		res = evaluation.evaluate_query(query, retrieved, correct)
 		self.assertEqual(res['ap'], np.mean([1.0/3, 2.0/4]))
 		self.assertEqual(res['p1'], 0)
 		self.assertEqual(res['r5'], 1)

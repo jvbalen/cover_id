@@ -12,6 +12,7 @@ from sklearn.cross_validation import train_test_split
 
 # global vars
 data_dir = '/Users/Jan/Documents/Work/Data/SHS_julien/'
+chroma_dir = os.path.join(data_dir, 'chroma/')
 
 
 def read_cliques(clique_file='shs_pruned.txt'):
@@ -19,7 +20,8 @@ def read_cliques(clique_file='shs_pruned.txt'):
 
     Args:
         clique_file (str): file name of the text file containing clique
-            data. File is formatted as in the original SHS dataset:
+            data. File is located in data_dir (global variable) and
+            formatted as in the original SHS dataset:
             - rows starting with '#' are ignored
             - rows starting with '%' are clique names
             - any subsequent rows are URIs of songs in that clique
@@ -111,6 +113,9 @@ def split_train_test_validation(cliques_by_name, ratio=(50,20,30),
                                        random_state=random_state)
     val_cliques = {clique_name: cliques_by_name[clique_name] for
                    clique_name in val}
+
+    # rescale (ratio[0], ratio[1]) to sum to 1
+    ratio = ratio[:-1] / np.sum(ratio[:-1])
     
     # make train & test set
     train, test =  train_test_split(train_test,
@@ -124,12 +129,18 @@ def split_train_test_validation(cliques_by_name, ratio=(50,20,30),
     return train_cliques, test_cliques, val_cliques
 
 
-def uris_from_clique_dict(cliques_by_name):
-    """Return list of all uris in a clique dictionary."""
-    
-    uris = [uri for clique in cliques_by_name for uri in cliques_by_name[clique]]
+def read_chroma(uri, ext='.csv'):
+    """Read chroma for a given URI.
 
-    return uris
+    Args:
+        uri (str): song uri
+
+    Returns:
+        2d-array: chroma array (rows are frames)
+    """
+    chroma_path = chroma_dir + uri + ext
+    chroma_data = read_csv(chroma_path)
+    return chroma_data.values
 
 
 def read_uris():
