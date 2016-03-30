@@ -23,6 +23,8 @@ import scipy.spatial.distance as dist
 
 import SHS_data
 import evaluation
+import util
+import fingerprints as fp
 
 
 def run_leave_one_out_experiment(clique_dict, fp_function, print_every=10):
@@ -41,7 +43,7 @@ def run_leave_one_out_experiment(clique_dict, fp_function, print_every=10):
             Includes the mean of each evaluation metric returned by
             evaluation.evaluate_query().
     """
-    uris = uris_from_clique_dict(clique_dict)
+    uris = util.uris_from_clique_dict(clique_dict)
     
     # compute fingerprints
     print('Computing fingerprints...')
@@ -51,6 +53,7 @@ def run_leave_one_out_experiment(clique_dict, fp_function, print_every=10):
     results_by_query = dict.fromkeys(uris)
     
     # querying clique by clique for efficient evaluation
+    #     (no need to look up ground truth for each uri)
     print('Running queries...')
     for i, clique in enumerate(clique_dict):
         if np.mod(i+1, print_every) == 0:
@@ -60,6 +63,7 @@ def run_leave_one_out_experiment(clique_dict, fp_function, print_every=10):
         clique_uris = clique_dict[clique]
 
         for query in clique_uris:
+            correct_uris = list(set(clique_uris) - set([query]))
             
             # query fingerprint database
             ranked_candidates = query_database(fingerprints, query)
@@ -147,7 +151,7 @@ def query_database(fp_database, query_uri, dist_metric='cosine'):
         distances = np.min(distances_all_keys, axis=0)
 
     # one fingerprint
-    elif len(query_fp.shape) == 1:
+    elif type(query_fp) is np.ndarray and len(query_fp.shape) == 1:
         distances = dist.cdist([query_fp], candidate_fps,
                                 metric=dist_metric)[0]
     
@@ -161,18 +165,22 @@ def query_database(fp_database, query_uri, dist_metric='cosine'):
     return ranked_uris
 
 
-
-def uris_from_clique_dict(clique_dict):
-    """Return list of all uris in a clique dictionary.
-
-    Args:
-        clique_dict (dict): dictionary of clique names (keys) each
-            pointing to a list or uris
-
-    Returns:
-        list: list of all uris in the dictionary
+if __name__ == '__main__':
+    """Run a leave-one-out experiment using 5 %% of the SHS dataset
+        and a fingerprint based on 2D Fourier magnitude coefficients.
     """
-    
-    uris = [uri for clique in clique_dict for uri in clique_dict[clique]]
+    ratio = (5, 15, 80)
+    fp_function = fp.fourier
 
-    return uris
+    clique_dict, _ = SHS_data.read_cliques()
+
+    subsets = util.split_train_test_validation(clique_dict, ratio=ratio)
+    train_cliques = subsets[0]
+
+    results = run_leave_one_out_experiment(train_cliques,
+                                                fp_function,
+                                                print_every=50)
+
+    print('ratio:', ratio)
+    print('fp_function:', fp_function.__name__)
+    print('results:', results)

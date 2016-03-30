@@ -34,14 +34,14 @@ def evaluate_query(query, retrieved, correct_uris):
     if query in retrieved:
         retrieved = list(retrieved)  # make copy
         retrieved.remove(query)
-        warn('Current evaluation assumes \'leave-one-out\' paradigm.' + 
-             'Query has been removed from retrieved songs.')
+        warn('Current evaluation assumes \'leave-one-out\' paradigm.' +
+             ' Query has been removed from retrieved songs.')
     
     if query in correct_uris:
         correct_uris = list(correct_uris)  # make copy
         correct_uris.remove(query)
-        warn('Current evaluation assumes \'leave-one-out\' paradigm.' + 
-             'Query has been removed from correct uris.')
+        warn('Current evaluation assumes \'leave-one-out\' paradigm. ' +
+             ' Query has been removed from correct uris.')
     
     # which retrieved documents are relevant (bool)?
     relevant = [r in correct_uris for r in retrieved]
