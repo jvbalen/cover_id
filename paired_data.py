@@ -107,12 +107,18 @@ def patchwork(chroma, n_patches=7, patch_len=64):
         2d-array: 2d-array containing the re-arranged chroma
             features.
     """
+    min_len = patch_len + 1
+
+    if len(chroma) <= min_len:
+        n_repetitions = min_len // len(chroma) + 1
+        chroma = np.tile(chroma, (n_repetitions, 1))
+
     last_patch = len(chroma) - patch_len + 1
     hop_length =(last_patch - 1) / (n_patches - 1)
-    
+
     t_begin = np.arange(0, last_patch, hop_length).astype(int)
 
-    patches = np.vstack([chroma[t:t + patch_len] for t in t_begin])
+    patches = np.vstack([chroma[t:t+patch_len] for t in t_begin])
 
     return patches
 
