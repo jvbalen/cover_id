@@ -52,6 +52,7 @@ def cov(chroma, normalise='col'):
 
         # normalise and flatten:
         if normalise == 'mat':
+            # note: does not have any effect with dist_metric = 'cosine'
             fp = fp / np.linalg.norm(fp)
             upper = np.triu_indices_from(fp, k=0)
             fp = fp[upper]
