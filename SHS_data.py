@@ -100,6 +100,22 @@ def read_chroma(uri, ext='.csv'):
     return chroma_data.values
 
 
+def preload_chroma(uris):
+    """Load chroma features for a dataset into a dict.
+        Not recommended for full SHS (~800Mb of numpy arrays).
+
+    Args:
+        uris (list): list of uris
+
+    Returns:
+        dict: dictionary of chroma arrays.
+    """
+    chroma_dict = dict.fromkeys(uris)
+    for uri in uris:
+        chroma_dict[uri] = read_chroma(uri)
+    return chroma_dict
+
+
 def read_uris():
     """Read database of uri-id mappings.
     (For compatibility with Julien Osmalsky's ids)
