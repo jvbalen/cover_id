@@ -55,16 +55,17 @@ class Test_patchwork(unittest.TestCase):
     def test_artificial_data(self):
         """Do the patchworks share first and last frame with chroma?
             And do they have the correct size?"""
-        len_x = 12
-        n_patches, patch_len = 3, 3
+        n_patches, patch_len = 3, 10
 
-        chroma = np.arange(len_x).reshape((-1,1))
-        patches = paired_data.patchwork(chroma, n_patches=n_patches, patch_len=patch_len)
+        for len_x in range(1, 2 * n_patches * patch_len):
 
-        self.assertEqual(patches[0], chroma[0])
-        self.assertEqual(patches[-1], chroma[-1])
+            chroma = np.random.rand(len_x, 12)
+            patches = paired_data.patchwork(chroma, n_patches=n_patches, patch_len=patch_len)
 
-        self.assertEqual(len(patches), n_patches * patch_len)
+            self.assertTrue(np.allclose(patches[0], chroma[0]))
+            self.assertTrue(np.allclose(patches[-1], chroma[-1]))
+
+            self.assertEqual(len(patches), n_patches * patch_len, msg='len_x = {}'.format(len_x))
 
     def test_real_data(self):
         """Do the patchworks share first and last frame with chroma?
@@ -94,6 +95,20 @@ class Test_patchwork(unittest.TestCase):
 
         self.assertEqual(patches_1.shape, patches_2.shape)
         self.assertEqual(patches_3.shape, patches_4.shape)
+
+    def test_TRYBFEO12903CED194(self):
+        n_patches = 8
+        patch_len = 64
+
+        test_uri = 'TRYBFEO12903CED194'
+
+        chroma = SHS_data.read_chroma(test_uri)
+        patches = paired_data.patchwork(chroma, n_patches=n_patches, patch_len=patch_len)
+
+        self.assertTrue(np.allclose(patches[0],chroma[0]))
+        self.assertTrue(np.allclose(patches[-1], chroma[-1]))
+
+        self.assertEqual(len(patches), n_patches * patch_len)
 
 
     def test_short_chroma(self):
@@ -137,7 +152,7 @@ class Test_dataset_of_pairs(unittest.TestCase):
     """Tests for `dataset_of_pairs`."""
 
     def setUp(self):
-        ratio = (1,9,90)
+        ratio = (5,1,94)
         clique_dict, self.cliques_by_uri = SHS_data.read_cliques()
         self.train_cliques, _, _ = util.split_train_test_validation(clique_dict,
                                                                     ratio=ratio)
@@ -149,19 +164,22 @@ class Test_dataset_of_pairs(unittest.TestCase):
     def test_output_shapes(self):
         """Are the dimensions of the dataset consistent?"""
         output = paired_data.dataset_of_pairs(self.train_cliques, self.chroma_dict)
-        X_1, X_2, is_cover, pair_uris = output
+        X_A, X_B, is_cover, pair_uris = output
 
-        self.assertEqual(X_1.shape, X_2.shape)
-        self.assertEqual(len(X_1.shape), 3)
-        self.assertEqual(len(X_1), len(is_cover))
-        self.assertEqual(len(X_1), len(pair_uris))
+        self.assertEqual(X_A.shape, X_B.shape)
+        self.assertEqual(len(X_A.shape), 3)
+        self.assertEqual(len(X_A), len(is_cover))
+        self.assertEqual(len(X_A), len(pair_uris))
+
+        for X_a, X_b in zip(X_A, X_B):
+            self.assertEqual(X_a.shape, X_b.shape)
 
     def test_is_cover(self):
         """Are the target labels in is_cover balanced and consistent
             with pair uris?
         """
         output = paired_data.dataset_of_pairs(self.train_cliques, self.chroma_dict)
-        X_1, X_2, is_cover, pair_uris = output
+        X_A, X_B, is_cover, pair_uris = output
 
         verify_is_cover = [self.cliques_by_uri[uri_1] == self.cliques_by_uri[uri_2]
                            for uri_1, uri_2 in pair_uris]

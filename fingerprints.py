@@ -77,7 +77,12 @@ def corr(chroma):
         chroma (2d-array): 2d-array containing the chroma features.
 
     Returns:
-        list: 12 fingerprints (1d-arrray), one for each key.
+        list: 12 fingerprints (1d-array), one for each key.
+
+    [1] Van Balen, J., Bountouridis, D., Wiering, F., & Veltkamp, R.C.
+        (2014). Cognition-inspired Descriptors for Scalable Cover Song
+        Retrieval. In Proc. International Society for Music Information
+        Retrieval Conference.
     """
     fp = np.corrcoef(chroma, rowvar=0)
 

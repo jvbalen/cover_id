@@ -9,7 +9,7 @@ from numpy.random import choice
 from itertools import combinations
 
 
-def dataset_of_pairs(clique_dict, chroma_dict):
+def dataset_of_pairs(clique_dict, chroma_dict, n_patches=4, patch_len=64):
     """Construct a dataset of cover and non-cover chroma feature pairs.
 
     The `patchwork` function from this module is used to re-arrange chroma
@@ -37,8 +37,8 @@ def dataset_of_pairs(clique_dict, chroma_dict):
         # pair
         chroma_1 = chroma_dict[pair[0]]
         chroma_2 = chroma_dict[pair[1]]
-        patchwork_1 = patchwork(chroma_1)
-        patchwork_2 = patchwork(chroma_2)
+        patchwork_1 = patchwork(chroma_1, n_patches=n_patches, patch_len=patch_len)
+        patchwork_2 = patchwork(chroma_2, n_patches=n_patches, patch_len=patch_len)
         x_1, x_2 = align_pitch(patchwork_1, patchwork_2)
         X_1.append(x_1)
         X_2.append(x_2)
@@ -48,8 +48,8 @@ def dataset_of_pairs(clique_dict, chroma_dict):
         # non-pair
         chroma_1 = chroma_dict[non_pair[0]]
         chroma_2 = chroma_dict[non_pair[1]]
-        patchwork_1 = patchwork(chroma_1)
-        patchwork_2 = patchwork(chroma_2)
+        patchwork_1 = patchwork(chroma_1, n_patches=n_patches, patch_len=patch_len)
+        patchwork_2 = patchwork(chroma_2, n_patches=n_patches, patch_len=patch_len)
         x_1, x_2 = align_pitch(patchwork_1, patchwork_2)
         X_1.append(x_1)
         X_2.append(x_2)
@@ -96,7 +96,7 @@ def get_pairs(clique_dict):
     return pairs, non_pairs
 
 
-def patchwork(chroma, n_patches=7, patch_len=64):
+def patchwork(chroma, n_patches=4, patch_len=64):
     """Re-arrange chroma features into a fixed length sequence of
         patches.
 
@@ -113,10 +113,10 @@ def patchwork(chroma, n_patches=7, patch_len=64):
         n_repetitions = min_len // len(chroma) + 1
         chroma = np.tile(chroma, (n_repetitions, 1))
 
-    last_patch = len(chroma) - patch_len + 1
-    hop_length =(last_patch - 1) / (n_patches - 1)
-
-    t_begin = np.arange(0, last_patch, hop_length).astype(int)
+    last_patch = len(chroma) - patch_len
+    hop_length =(last_patch) / (n_patches - 1)
+    
+    t_begin = np.round(np.arange(0, last_patch + hop_length, hop_length)).astype(int)
 
     patches = np.vstack([chroma[t:t+patch_len] for t in t_begin])
 

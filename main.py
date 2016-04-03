@@ -7,13 +7,22 @@ Main function is run_leave_one_out_experiment.
 The primary data structures used here are:
 
 - datasets of cliques (dict)
+    Cliques are groups of performances of the same composition.
     Clique datasets are dictionaries with clique names as keys and
     lists of track URIs as values.
+
+- preloaded feature arrays (dict)
+    Feature data can also be stored in a dictionary when they are not
+    read directly from disk. See documentation for preload_chroma in
+    SHS_data module.
 
 - databases of fingerprints (dict)
     Fingerprint databases are dictionaries with URIs as keys and
     fingerprints as values. See documentation of fingerprints module
     for details.
+
+The structure of this package is such that only this module imports
+    any of the others.
 """
 
 from __future__ import division, print_function
