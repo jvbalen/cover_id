@@ -1,0 +1,55 @@
+# experiment log
+
+# 1x12x32-2x1x64-128
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+weight_scale = 0.1
+netw = [(conv_layer, {'shape' : (1,12), 'n_filters' : 32, 'padding' : 'VALID'}),
+		(max_pool_layer, {'shape' : (4,1)}),
+		(conv_layer, {'shape' : (2,1), 'n_filters' : 64, 'padding' : 'SAME'}).
+		(max_pool_layer, {'shape' : (16,1)}),
+		(fully_connected_layer, {'n_nodes' : 128})]
+n_epoques = 2500
+batch_size= = 100
+lr = 3e-4
+step [end]
+  d_pairs, d_non_pairs = 3.27, 5.92
+  train error 15.8, train bhatt 0.441
+  test error 19.5, test bhatt 0.162
+
+# 1x12x32-2x1x64-192
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+weight_scale = 0.1
+netw = [(conv_layer, {'shape' : (1,12), 'n_filters' : 32, 'padding' : 'VALID'}),
+		(max_pool_layer, {'shape' : (4,1)}),
+		(conv_layer, {'shape' : (2,1), 'n_filters' : 64, 'padding' : 'SAME'}).
+		(max_pool_layer, {'shape' : (16,1)}),
+		(fully_connected_layer, {'n_nodes' : 192})]
+n_epoques = 2500
+batch_size= = 100
+lr = 3e-4
+step [end]
+  d_pairs, d_non_pairs = 3.29, 5.84
+  train error 15.9, train bhatt 0.446
+  test error 19.7, test bhatt 0.158
+
+# 1x12x32-2x1x64-256
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+weight_scale = 0.1
+netw = [(conv_layer, {'shape' : (1,12), 'n_filters' : 32, 'padding' : 'VALID'}),
+		(max_pool_layer, {'shape' : (4,1)}),
+		(conv_layer, {'shape' : (2,1), 'n_filters' : 64, 'padding' : 'SAME'}).
+		(max_pool_layer, {'shape' : (16,1)}),
+		(fully_connected_layer, {'n_nodes' : 256})]
+n_epoques = 2500
+batch_size= = 100
+lr = 3e-4
+step [end]
+  d_pairs, d_non_pairs = 3.47, 5.71
+  train error 17.2, train bhatt 0.335
+  test error 19.5, test bhatt 0.155
