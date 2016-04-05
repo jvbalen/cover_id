@@ -160,5 +160,29 @@ def align_pitch(chroma_1, chroma_2):
     return chroma_1, chroma_2_aligned
 
 
-
+def get_batches(arrays, batch_size=50):
+    """Batch generator, no shuffling.
+    
+    Args:
+        arrays (list): list of arrays. Arrays should have equal length
+        batch_size (int): number of examples per batch
+        
+    Yields:
+        list: list of song pairs of length batch_size
+        
+    Usage:
+    >>> batches = get_batches([X, Y], batch_size=50)
+    >>> x, y = batches.next()
+    """
+    array_lengths = [len(array) for array in arrays]
+    n_examples = array_lengths[0]
+    if not np.all(np.array(array_lengths) == n_examples):
+        raise ValueError('Arrays must have the same length.')
+    start = 0
+    while True:
+        start = np.mod(start, n_examples)
+        stop = start + batch_size
+        batch = [np.take(array, range(start, stop), axis=0, mode='wrap') for array in arrays]
+        start = stop
+        yield batch
 
