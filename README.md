@@ -1,6 +1,5 @@
-## Chroma-based Cover Detection
+## Chroma Fingerprinting for Cover Detection
 
-Chroma-based cover detection and fingerprinting.
 Includes a proof-of-concept implementation of a chroma fingerprint based on a convolutional neural net.
 
 See LICENSE.
