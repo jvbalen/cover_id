@@ -1,7 +1,10 @@
-# CNN-based cover detection
+## Chroma-based Cover Detection
 
-Prood-of-concept implementation of cover detection system based on convolutional neural networks.
+Chroma-based cover detection and fingerprinting.
+Includes a proof-of-concept implementation of a chroma fingerprint based on a convolutional neural net.
 
-(c) 2016 jan van balen
+See LICENSE.
+
+(c) 2016 Jan Van Balen
 
 github.com/jvbalen - twitter.com/jvanbalen
