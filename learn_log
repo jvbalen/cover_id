@@ -1,6 +1,7 @@
-# experiment log
+# Experiment log
 
---- following learned_fingerprints_v1_2conv.ipynb ---
+
+# Prior experiments
 
 # basic 2conv
 # 1x12x32-2x1x64-128
@@ -15,60 +16,10 @@ network.add_fully_connected_layer(n_nodes=128)
 n_epoques = 2500
 batch_size= = 100
 lr = 3e-4
-step [end]
-  d_pairs, d_non_pairs = 3.27, 5.92
-  train error 15.8, train bhatt 0.441
-  test error 19.5, test bhatt 0.162
 fp_results: {'mean r5': 0.2287, 'mean ap': 0.2111, 'mean p1': 0.1773}
-
-# 2conv 192
-# 1x12x32-2x1x64-192
-ratio = (50,20,30)
-n_patches, patch_len = 8, 64
-n_test_cliques = 50
-network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
-network.add_max_pool_layer(shape=(4,1))
-network.add_conv_layer(shape=(2,1), n_filters=64)
-network.add_max_pool_layer(shape=(16,1))
-network.add_fully_connected_layer(n_nodes=192)
-n_epoques = 2500
-batch_size= = 100
-lr = 3e-4
-step [end]
-  d_pairs, d_non_pairs = 3.29, 5.84
-  train error 15.9, train bhatt 0.446
-  test error 19.7, test bhatt 0.158
-
-# 2conv 256
-# 1x12x32-2x1x64-256
-ratio = (50,20,30)
-n_patches, patch_len = 8, 64
-n_test_cliques = 50
-network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
-network.add_max_pool_layer(shape=(4,1))
-network.add_conv_layer(shape=(2,1), n_filters=64)
-network.add_max_pool_layer(shape=(16,1))
-network.add_fully_connected_layer(n_nodes=256)
-n_epoques = 2500
-batch_size= = 100
-lr = 3e-4
-step [end]
-  d_pairs, d_non_pairs = 3.47, 5.71
-  train error 17.2, train bhatt 0.335
-  test error 19.5, test bhatt 0.155
-  
- --- using learn.py (network as a class, new logger)  ---
-  
-# basic 2conv with alpha=2 (higher loss!): same performance
-# 1x12x32-2x1x64-128
-fp_results: {'mean r5': 0.2287, 'mean ap': 0.2110, 'mean p1': 0.1773}
-
-# basic 2conv with alpha=4 (higher loss!): worse performance
-# 1x12x32-2x1x64-128
-fp_results: {'mean r5': 0.1655, 'mean ap': 0.1428, 'mean p1': 0.0922}
   
 # basic 3conv: ok but not better
-#1x12x32-(4x1)-4x1x64-(4x1)-4x1x128-(4x1)-128
+# 1x12x32-(4x1)-4x1x64-(4x1)-4x1x128-(4x1)-128
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -88,7 +39,7 @@ n_epoques = 6400
 6401  16.5154  19.2239
 
 # only 1 pooling layer: not better, and slow
-#1x12x32-4x1x64-(64x1/64x1)-128
+# 1x12x32-4x1x64-(64x1/64x1)-128
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -104,11 +55,11 @@ n_epoques = 3200
        train     test 
 3200  18.8475  20.2301
 
- --- MATMUL layer experiment ---
- # either alpha=2 or 24 initial filters help
+
+# MATMUL layer experiments
  
 # 32+8 filters--very slow
-#1x12x32-8x8MM
+# 1x12x32-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -124,7 +75,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.2293, 'mean ap': 0.1857, 'mean p1': 0.1489}
 
 # 24+8 filters and alpha=1
-#1x12x24-8x8MM
+# 1x12x24-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -140,7 +91,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.3546, 'mean ap': 0.2805, 'mean p1': 0.2128}
 
 # 24+8 filters and alpha=2
-#1x12x24-8x8MM
+# 1x12x24-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -156,7 +107,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.3859, 'mean ap': 0.3357, 'mean p1': 0.3404}
 
 # 24+8 filters and alpha=2 (but learning faster)
-#1x12x24-8x8MM
+# 1x12x24-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -172,7 +123,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.4085, 'mean ap': 0.3514, 'mean p1': 0.3758}
 
 # 24+8 filters and alpha=4
-#1x12x24-8x8MM
+# 1x12x24-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -188,7 +139,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.4205, 'mean ap': 0.4010, 'mean p1': 0.4255}
 
 # 24+32+8 filters and alpha=5
-#1x12x24-8x8MM
+# 1x12x24-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -204,7 +155,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.3810, 'mean ap': 0.3464, 'mean p1': 0.3404}
 
 # 24+8 filters and alpha=6
-#1x12x24-8x8MM
+# 1x12x24-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
@@ -220,7 +171,7 @@ n_epoques = 3200
 fp_results: {'mean r5': 0.4467, 'mean ap': 0.3808, 'mean p1': 0.3830}
 
 # 24+32+8 filters and alpha=4
-#1x12x24-(4x1)-2x1x32-8x8MM
+# 1x12x24-(4x1)-2x1x32-8x8MM
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
