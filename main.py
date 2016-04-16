@@ -80,7 +80,7 @@ def run_leave_one_out_experiment(clique_dict, fp_function, print_every=10):
             # evaluate
             results_by_query[query] = evaluation.evaluate_query(query,
                                                                 ranked_candidates,
-                                                                clique_uris)
+                                                                correct_uris)
     # average metrics
     metrics = results_by_query.values()[0].keys()
     results = {'mean ' + metric :
@@ -161,6 +161,9 @@ def query_database(fp_database, query_uri, dist_metric='cosine'):
 
     # one fingerprint
     elif type(query_fp) is np.ndarray and len(query_fp.shape) == 1:
+        # print(query_fp.shape)
+        # print(len(candidate_fps))
+        # print('\n'.join([str(cfp) for cfp in candidate_fps if len(cfp) == 1]))
         distances = dist.cdist([query_fp], candidate_fps,
                                 metric=dist_metric)[0]
     

@@ -5,9 +5,8 @@
 import unittest
 
 import numpy as np
-from itertools import combinations
 
-import SHS_data
+from cover_id import SHS_data
 
 
 class Test_read_cliques(unittest.TestCase):
@@ -47,50 +46,6 @@ class Test_read_cliques(unittest.TestCase):
 				msg='test_uri = {}'.format(test_uri))
 
 
-class Test_split_train_test_validation(unittest.TestCase):
-	"""Tests for `split_train_test_validation'."""
-
-	def setUp(self):
-		self.cliques_by_name, self.cliques_by_uri = SHS_data.read_cliques()
-
-	def test_some_ratio(self):
-		"""For some common set size ratio, are all sets non-empty?
-		Do set sizes sum to the total number of cliques?
-		Is there no overlap?
-		"""
-		subsets = SHS_data.split_train_test_validation(self.cliques_by_name,
-													   ratio=(50,20,30))
-		subset_sizes = np.array([len(subset) for subset in subsets])
-
-		# check non-empty
-		self.assertTrue(np.all(subset_sizes > 0))
-
-		# check total length
-		self.assertEqual(np.sum(subset_sizes), len(self.cliques_by_name))
-
-		# check overlap
-		self.assertTrue(not check_clique_overlap(subsets))
-
-	def test_no_validation(self):
-		"""For set sizes (x,y,0), is only the validation set empty?
-		Do set sizes sum to the total number of cliques?
-		Is there no overlap?
-		"""
-		subsets = SHS_data.split_train_test_validation(self.cliques_by_name,
-													   ratio=(70,30,0))
-		subset_sizes = np.array([len(subset) for subset in subsets])
-
-		# check empty / non-empty
-		self.assertTrue(np.all(subset_sizes[:-1] > 0))
-		self.assertTrue(subset_sizes[-1] == 0)
-
-		# check total length
-		self.assertEqual(np.sum(subset_sizes), len(self.cliques_by_name))
-
-		# check overlap
-		self.assertTrue(not check_clique_overlap(subsets))
-
-
 class Test_read_uris(unittest.TestCase):
 	"""Tests for `read_uris`."""
 
@@ -116,15 +71,6 @@ class Test_read_uris(unittest.TestCase):
 		for uri in self.uris:
 			self.assertEqual(self.uris[self.ids[uri]], uri)
 
-
-def check_clique_overlap(dicts):
-    """Check if any of a tuple or list of cliques show overlap."""
-
-    sets = [set(dict_i.keys()) for dict_i in dicts]
-
-    overlap = [len(set_i & set_j) for set_i, set_j in combinations(sets, 2)]
-
-    return np.any(overlap)
 
 
 if __name__ == '__main__':

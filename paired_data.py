@@ -56,7 +56,7 @@ def dataset_of_pairs(clique_dict, chroma_dict, n_patches=4, patch_len=64):
         is_cover.append(False)
         pair_uris.append(non_pair)
 
-    Y = np.array(is_cover, dtype=float).reshape((-1,1))
+    Y = np.array(is_cover, dtype=float).flatten()
     
     return np.array(X_1), np.array(X_2), Y, pair_uris
 
