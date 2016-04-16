@@ -10,7 +10,7 @@ import numpy as np
 import SHS_data
 import util
 
-import paired_data
+from cover_id import paired_data
 
 
 class Test_get_pairs(unittest.TestCase):

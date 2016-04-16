@@ -1,15 +1,17 @@
 # experiment log
 
+--- following learned_fingerprints_v1_2conv.ipynb ---
+
+# basic 2conv
 # 1x12x32-2x1x64-128
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
-weight_scale = 0.1
-netw = [(conv_layer, {'shape' : (1,12), 'n_filters' : 32, 'padding' : 'VALID'}),
-		(max_pool_layer, {'shape' : (4,1)}),
-		(conv_layer, {'shape' : (2,1), 'n_filters' : 64, 'padding' : 'SAME'}).
-		(max_pool_layer, {'shape' : (16,1)}),
-		(fully_connected_layer, {'n_nodes' : 128})]
+network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
+network.add_max_pool_layer(shape=(4,1))
+network.add_conv_layer(shape=(2,1), n_filters=64)
+network.add_max_pool_layer(shape=(16,1))
+network.add_fully_connected_layer(n_nodes=128)
 n_epoques = 2500
 batch_size= = 100
 lr = 3e-4
@@ -17,17 +19,18 @@ step [end]
   d_pairs, d_non_pairs = 3.27, 5.92
   train error 15.8, train bhatt 0.441
   test error 19.5, test bhatt 0.162
+fp_results: {'mean r5': 0.2287, 'mean ap': 0.2111, 'mean p1': 0.1773}
 
+# 2conv 192
 # 1x12x32-2x1x64-192
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
-weight_scale = 0.1
-netw = [(conv_layer, {'shape' : (1,12), 'n_filters' : 32, 'padding' : 'VALID'}),
-		(max_pool_layer, {'shape' : (4,1)}),
-		(conv_layer, {'shape' : (2,1), 'n_filters' : 64, 'padding' : 'SAME'}).
-		(max_pool_layer, {'shape' : (16,1)}),
-		(fully_connected_layer, {'n_nodes' : 192})]
+network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
+network.add_max_pool_layer(shape=(4,1))
+network.add_conv_layer(shape=(2,1), n_filters=64)
+network.add_max_pool_layer(shape=(16,1))
+network.add_fully_connected_layer(n_nodes=192)
 n_epoques = 2500
 batch_size= = 100
 lr = 3e-4
@@ -36,16 +39,16 @@ step [end]
   train error 15.9, train bhatt 0.446
   test error 19.7, test bhatt 0.158
 
+# 2conv 256
 # 1x12x32-2x1x64-256
 ratio = (50,20,30)
 n_patches, patch_len = 8, 64
 n_test_cliques = 50
-weight_scale = 0.1
-netw = [(conv_layer, {'shape' : (1,12), 'n_filters' : 32, 'padding' : 'VALID'}),
-		(max_pool_layer, {'shape' : (4,1)}),
-		(conv_layer, {'shape' : (2,1), 'n_filters' : 64, 'padding' : 'SAME'}).
-		(max_pool_layer, {'shape' : (16,1)}),
-		(fully_connected_layer, {'n_nodes' : 256})]
+network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
+network.add_max_pool_layer(shape=(4,1))
+network.add_conv_layer(shape=(2,1), n_filters=64)
+network.add_max_pool_layer(shape=(16,1))
+network.add_fully_connected_layer(n_nodes=256)
 n_epoques = 2500
 batch_size= = 100
 lr = 3e-4
@@ -53,3 +56,184 @@ step [end]
   d_pairs, d_non_pairs = 3.47, 5.71
   train error 17.2, train bhatt 0.335
   test error 19.5, test bhatt 0.155
+  
+ --- using learn.py (network as a class, new logger)  ---
+  
+# basic 2conv with alpha=2 (higher loss!): same performance
+# 1x12x32-2x1x64-128
+fp_results: {'mean r5': 0.2287, 'mean ap': 0.2110, 'mean p1': 0.1773}
+
+# basic 2conv with alpha=4 (higher loss!): worse performance
+# 1x12x32-2x1x64-128
+fp_results: {'mean r5': 0.1655, 'mean ap': 0.1428, 'mean p1': 0.0922}
+  
+# basic 3conv: ok but not better
+#1x12x32-(4x1)-4x1x64-(4x1)-4x1x128-(4x1)-128
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
+network.add_max_pool_layer(shape=(4,1))
+network.add_conv_layer(shape=(4,1), n_filters=64)
+network.add_max_pool_layer(shape=(4,1))
+network.add_conv_layer(shape=(4,1), n_filters=128)
+network.add_max_pool_layer(shape=(4,1))
+network.add_fully_connected_layer(n_nodes=128)
+alpha = 1
+m = 10
+lr = 1e-4
+batch_size = 100
+n_epoques = 6400
+       train     test 
+6401  16.5154  19.2239
+
+# only 1 pooling layer: not better, and slow
+#1x12x32-4x1x64-(64x1/64x1)-128
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
+network.add_conv_layer(shape=(16,1), n_filters=64, padding='SAME')
+network.add_max_pool_layer(shape=(64,1), strides=[1,64,1,1])
+network.add_fully_connected_layer(n_nodes=128)
+alpha = 1
+m = 10
+lr = 1e-4
+batch_size = 100
+n_epoques = 3200
+       train     test 
+3200  18.8475  20.2301
+
+ --- MATMUL layer experiment ---
+ # either alpha=2 or 24 initial filters help
+ 
+# 32+8 filters--very slow
+#1x12x32-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=32, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 1
+m = 10
+lr = 1e-5
+batch_size = 100
+n_epoques = 3200
+       TR_loss TR_d_pairs TR_d_non_pairs  TE_loss TE_d_pairs TE_d_non_pairs
+3201  30.3935    6.98934        8.13142  25.3281    5.94252        7.36123 
+fp_results: {'mean r5': 0.2293, 'mean ap': 0.1857, 'mean p1': 0.1489}
+
+# 24+8 filters and alpha=1
+#1x12x24-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 1
+m = 10
+lr = 1e-4
+batch_size = 100
+n_epoques = 3200
+      TR.loss TR.d_pairs TR.d_non_pairs  TE.loss TE.d_pairs TE.d_non_pairs
+3200  20.6782    4.73059        6.15076  21.2316    4.40754        5.71471 
+fp_results: {'mean r5': 0.3546, 'mean ap': 0.2805, 'mean p1': 0.2128}
+
+# 24+8 filters and alpha=2
+#1x12x24-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 2
+m = 10
+lr = 1e-4 # might have been 3e-4 or 1e-5
+batch_size = 100
+n_epoques = 3200
+      TR.loss TR.d_pairs TR.d_non_pairs  TE.loss TE.d_pairs TE.d_non_pairs
+3200  28.2446     6.1864        7.88103  28.3956    5.70557        7.13386
+fp_results: {'mean r5': 0.3859, 'mean ap': 0.3357, 'mean p1': 0.3404}
+
+# 24+8 filters and alpha=2 (but learning faster)
+#1x12x24-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 2
+m = 10
+lr = 3e-4
+batch_size = 100
+n_epoques = 3200
+      TR.loss TR.d_pairs TR.d_non_pairs  TE.loss TE.d_pairs TE.d_non_pairs
+3200  27.3455    6.07304        7.72178  27.2169    5.60031        7.35468
+fp_results: {'mean r5': 0.4085, 'mean ap': 0.3514, 'mean p1': 0.3758}
+
+# 24+8 filters and alpha=4
+#1x12x24-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 4
+m = 10
+lr = 3e-4
+batch_size = 100
+n_epoques = 3200
+      TR.loss TR.d_pairs TR.d_non_pairs TE.loss TE.d_pairs TE.d_non_pairs
+3200  33.0718    7.10369        9.27887  34.106    6.71366        8.66705 
+fp_results: {'mean r5': 0.4205, 'mean ap': 0.4010, 'mean p1': 0.4255}
+
+# 24+32+8 filters and alpha=5
+#1x12x24-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 5
+m = 10
+lr = 3e-4
+batch_size = 100
+n_epoques = 3200
+     TR.loss TR.d_pairs TR.d_non_pairs  TE.loss TE.d_pairs TE.d_non_pairs
+3200  36.654    7.75976        9.68535  35.8025    7.02474        8.90828 
+fp_results: {'mean r5': 0.3810, 'mean ap': 0.3464, 'mean p1': 0.3404}
+
+# 24+8 filters and alpha=6
+#1x12x24-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 6
+m = 10
+lr = 3e-4
+batch_size = 100
+n_epoques = 3200
+      TR.loss TR.d_pairs TR.d_non_pairs  TE.loss TE.d_pairs TE.d_non_pairs
+3200  39.5022    8.08054         9.8723  38.0498    7.31504          9.253
+fp_results: {'mean r5': 0.4467, 'mean ap': 0.3808, 'mean p1': 0.3830}
+
+# 24+32+8 filters and alpha=4
+#1x12x24-(4x1)-2x1x32-8x8MM
+ratio = (50,20,30)
+n_patches, patch_len = 8, 64
+n_test_cliques = 50
+network.add_conv_layer(shape=(1,12), n_filters=24, padding='VALID')
+network.add_matmul_layer(filter_len=8, n_filters=8)
+alpha = 4
+m = 10
+lr = 3e-4
+batch_size = 100
+n_epoques = 3200
+      TR.loss TR.d_pairs TR.d_non_pairs  TE.loss TE.d_pairs TE.d_non_pairs
+3200  35.6998    6.78104        8.40169  34.1894    6.46524        8.44341 
+fp_results: {'mean r5': 0.3644, 'mean ap': 0.2691, 'mean p1': 0.2340}
+
+# 2dFTM
+fp_results: {'mean r5': 0.3851, 'mean ap': 0.3580, 'mean p1': 0.3900}

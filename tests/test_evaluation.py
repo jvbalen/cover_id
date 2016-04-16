@@ -8,8 +8,8 @@ import unittest
 import numpy as np
 from itertools import combinations
 
-import SHS_data
-import evaluation
+from cover_id import SHS_data
+from cover_id import evaluation
 
 
 class Test_evaluate_query(unittest.TestCase):

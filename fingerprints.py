@@ -125,6 +125,12 @@ def fourier(chroma, n_ftm=64, hop_length=None, stretch=[1]):
     if hop_length is None:
         hop_length = n_ftm
 
+    # pad short chroma series with zero frames
+    n_frames, n_bins = chroma.shape
+    if n_frames < n_ftm:
+        pad_frames = np.zeros((n_ftm - n_frames, n_bins))
+        chroma = np.vstack((chroma, pad_frames))
+
     # prepend 1 in stretch
     stretch = list(stretch)  # make copy
     if 1 in stretch:
@@ -136,13 +142,13 @@ def fourier(chroma, n_ftm=64, hop_length=None, stretch=[1]):
 
     fp = []
     for s in stretch:
-        # simple resampling using padding
+        # simple resampling
         t_stretch = np.arange(0, len(chroma), s).astype(int)
         chroma = chroma[t_stretch]
 
         # slice chroma to chunks
         chroma_chunks = [chroma[frame_i:frame_i+n_ftm, :]
-                         for frame_i in range(0, len(chroma) - n_ftm, hop_length)]
+                         for frame_i in range(0, len(chroma)+1 - n_ftm, hop_length)]
         
         # 2D Fourier transform magnitudes
         chunks_ftm = [np.abs(np.fft.fft2(chunk)) for chunk in chroma_chunks]
@@ -152,7 +158,7 @@ def fourier(chroma, n_ftm=64, hop_length=None, stretch=[1]):
 
         fp.append(ftm.flatten())
     
-    # if len(stretch) == 1:
-    #     fp = fp[0]
+    if len(stretch) == 1:
+        fp = fp[0]
 
     return fp

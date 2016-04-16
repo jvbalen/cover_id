@@ -7,10 +7,10 @@ from __future__ import division, print_function
 import unittest
 import numpy as np
 
-import SHS_data
-import main
-import util
-import fingerprints as fp
+from cover_id import SHS_data
+from cover_id import main
+from cover_id import util
+from cover_id import fingerprints as fp
 
 class Test_fingerprint_tracks(unittest.TestCase):
 
@@ -57,13 +57,13 @@ class Test_query_database(unittest.TestCase):
         self.train_uris = util.uris_from_clique_dict(train_cliques)
 
     def test_query_in_results(self):
-        """Does a query on a size-1 database return its only uri?"""
+        """Does the query not get returned as part of the results?"""
         query_uri = self.train_uris[0]
         database = main.fingerprint_tracks(self.train_uris, fp.fourier)
         ranked_uris = main.query_database(database, query_uri)
         self.assertTrue(not query_uri in ranked_uris)
 
-    def test_database_size_two(self):
+    def test_database_size_one(self):
         """Does a query on a size-1 database return its only uri?"""
         db_uri, query_uri = self.train_uris[:2]
         database = main.fingerprint_tracks([db_uri, query_uri], fp.fourier)
